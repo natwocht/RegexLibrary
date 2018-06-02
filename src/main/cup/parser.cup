@@ -1,0 +1,167 @@
+import java_cup.runtime.*;
+
+Parser code {:
+
+    tree.Node root;
+    public tree.Node getRoot()
+    {
+        return root;
+    }
+
+:}
+
+/* define how to connect to the scanner! */
+init with {:  :};
+scan with {:   return getScanner().next_token(); :};
+
+/* Terminals (tokens returned by the scanner). */
+terminal DASH;
+terminal LEFT_SQUARE_BRACKET;
+terminal RIGHT_SQUARE_BRACKET;
+terminal LEFT_BRACKET;
+terminal RIGHT_BRACKET;
+terminal QUESTION_MARK;
+terminal STAR;
+terminal PLUS;
+terminal BAR;
+terminal Character CHAR;
+
+/* Non terminals */
+
+non terminal tree.Node all;
+non terminal tree.Node union;
+non terminal tree.Node concatenation;
+non terminal tree.Node basic_RE;
+non terminal tree.Node elementary_RE;
+non terminal tree.Node group;
+non terminal tree.Node star;
+non terminal tree.Node question_mark;
+non terminal tree.Node plus;
+non terminal tree.Node set;
+non terminal tree.Node series;
+non terminal tree.Node element;
+non terminal tree.Node range;
+
+/* The grammar rules */
+
+/* Grammar */
+all ::= union:u
+	{:
+		tree.Node end = new tree.Hash();
+		RESULT = new tree.AndNode(u, end);
+		root = RESULT;
+	:}
+	;
+
+union ::= union:u BAR concatenation:c
+    {:
+        RESULT = new tree.OrNode(u, c);
+    :}
+    | concatenation:c
+    {:
+        RESULT = c;
+    :}
+    ;
+concatenation ::= concatenation:c basic_RE:bre
+    {:
+        RESULT = new tree.AndNode(c, bre);
+    :}
+    | basic_RE:bre
+    {:
+        RESULT = bre;
+    :}
+    ;
+
+basic_RE ::= star:s
+	{:
+	    RESULT = s;
+	:}
+	| plus:p
+	{:
+		RESULT = p;
+	:}
+	| question_mark:q
+    {:
+    	RESULT = q;
+    :}
+	| elementary_RE:e
+	{:
+		RESULT = e;
+	:}
+	;
+
+star ::= elementary_RE:e STAR
+	{:
+		RESULT = new tree.StarNode(e);
+	:}
+	;
+plus  ::= elementary_RE:e PLUS
+	{:
+		RESULT = new tree.PlusNode(e);
+	:}
+	;
+
+question_mark ::= elementary_RE:e QUESTION_MARK
+	{:
+		RESULT = new tree.OrNode(e);
+	:}
+    ;
+
+elementary_RE ::= group:g
+	{:
+	    RESULT = g;
+	:}
+    | CHAR:c
+	{:
+		RESULT = new tree.SymbolNode(c);
+	:}
+    | set:s
+	{:
+		RESULT = s;
+	:}
+	;
+group ::= LEFT_BRACKET union:u RIGHT_BRACKET
+	{:
+		RESULT = u;
+	:}
+	;
+set ::= LEFT_SQUARE_BRACKET  series:s RIGHT_SQUARE_BRACKET
+	{:
+		RESULT = s;
+	:}
+	;
+series ::= element:e
+	{:
+		RESULT = e;
+	:}
+
+	| element:e series:s
+	{:
+		RESULT = new tree.OrNode(e, s);
+	:}
+	;
+element ::= range:r
+	{:
+		RESULT = r;
+	:}
+
+	| CHAR:c
+	{:
+		RESULT = new tree.SymbolNode(c);
+	:}
+	;
+
+range ::= CHAR:char1 DASH CHAR:char2
+	{:
+		RESULT = new tree.OrNode(char1, char2);
+	:}
+	;
+
+
+
+
+
+
+
+
+
