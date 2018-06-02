@@ -7,6 +7,7 @@ import com.google.common.collect.Multimap;
 
 public class DAS {
 
+    State currentState;
     static char counter = 'A'; // name of state
     private Map <Integer, Character> inputSymbols; // input symbols: id + char value
     private Map <Integer, Node> inputSymbolNodes; // input symbols: id + tree.Node
@@ -60,6 +61,7 @@ public class DAS {
                 }
             }
         }
+        currentState = Dstates.get(0);
     }
 
     /* prints trans table */
@@ -89,4 +91,23 @@ public class DAS {
         return u;
     }
 
+    public boolean takeCharacter (Character c) {
+
+        State nextState = Dtrans.get(currentState).get(c);
+        if (nextState == null)
+            return false;
+
+        currentState = nextState;
+        return true;
+    }
+
+    public boolean reachTheEnd() {
+        if (existingStates.get(currentState).contains(hashPosition))
+            return true;
+        return false;
+    }
+
+    public void resetAutomaton() {
+        currentState = Dstates.get(0);
+    }
 }
