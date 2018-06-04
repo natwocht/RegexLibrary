@@ -1,4 +1,4 @@
-package tree;
+package regex_matching.tree;
 
 import java.io.IOException;
 import java.util.HashMap;

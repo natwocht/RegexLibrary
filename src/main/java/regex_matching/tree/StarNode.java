@@ -1,4 +1,4 @@
-package tree;
+package regex_matching.tree;
 
 public class StarNode extends Node {
 

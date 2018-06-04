@@ -1,18 +1,19 @@
-package das;
-import tree.Node;
+package regex_matching.das;
+import regex_matching.tree.Node;
 
 import java.util.*;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
+/* Implements algorithm of constructing DFA from the regex three*/
 public class DAS {
 
-    State currentState;
+    State currentState; // current state of automat
     static char counter = 'A'; // name of state
     private Map <Integer, Character> inputSymbols; // input symbols: id + char value
     private Map <Integer, Node> inputSymbolNodes; // input symbols: id + tree.Node
     private Multimap <Character, Integer> characterPosition; // defines in which positions the given character , each key may be associated with multiple values
-    private Map<State, Set<Integer>> existingStates = new HashMap<State, Set<Integer>>();
+    private Map<State, Set<Integer>> existingStates = new HashMap<State, Set<Integer>>(); // auxiliary map
     Integer hashPosition; // position of #
 
     private List<State> Dstates; // list of the states in DAS
@@ -91,6 +92,7 @@ public class DAS {
         return u;
     }
 
+    /*take next character*/
     public boolean takeCharacter (Character c) {
 
         State nextState = Dtrans.get(currentState).get(c);
@@ -101,12 +103,14 @@ public class DAS {
         return true;
     }
 
+    /*If we reach terminal state*/
     public boolean reachTheEnd() {
         if (existingStates.get(currentState).contains(hashPosition))
             return true;
         return false;
     }
 
+    /*Resets automat*/
     public void resetAutomaton() {
         currentState = Dstates.get(0);
     }

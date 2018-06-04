@@ -14,6 +14,7 @@ import java.io.*;
 %public
 %class Lexer
 %cup
+%scanerror LexerException
 %unicode
 %line
 %column
@@ -25,6 +26,10 @@ import java.io.*;
     public Lexer(java.io.Reader in, ComplexSymbolFactory sf){
     	this(in);
     	symbolFactory = sf;
+    }
+
+    private void error(String message) {
+	    System.out.println("Error at line "+(yyline+1)+", column "+(yycolumn+1)+" : "+message);
     }
 
     private Symbol symbol(String name, int sym) {
@@ -47,6 +52,8 @@ import java.io.*;
     private void error(String message) {
         System.out.println("Error at line "+(yyline+1)+", column "+(yycolumn+1)+" : "+message);
     }
+
+
 %}
 
 %eofval{
